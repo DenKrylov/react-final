@@ -18,8 +18,8 @@ export const CartPage = () => {
 				<div className={classNames(s['cart-title'])}>
 					<span>{products.length}</span> в корзине
 				</div>
-				<CartList products={products} />
-				<CartAmount products={products} />
+				<CartList />
+				<CartAmount />
 			</div>
 		</div>
 	);

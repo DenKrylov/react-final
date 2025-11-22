@@ -1,10 +1,11 @@
 import s from '../../CartPage.module.css';
 import classNames from 'classnames';
+import { useAppSelector } from '../../../../../shared/store/utils';
+import { cartSelectors } from '../../../../../shared/store/slices/cart';
+import { Button } from '../../../../../shared/ui/Button';
 
-type CartAmountProps = {
-	products: CartProduct[];
-};
-export const CartAmount = ({ products }: CartAmountProps) => {
+export const CartAmount = () => {
+	const products = useAppSelector(cartSelectors.getCartProducts);
 	const allPrice = products.reduce((acc, p) => p.price * p.count + acc, 0);
 	const allDiscount = products.reduce(
 		(acc, p) => p.discount * p.count + acc,
@@ -49,15 +50,9 @@ export const CartAmount = ({ products }: CartAmountProps) => {
 					{`${allPrice - allDiscount} ₽`}
 				</span>
 			</div>
-			<button
-				onClick={handleSubmitCart}
-				className={classNames(
-					s['button'],
-					s['button_type_primary'],
-					s['button_type_wide']
-				)}>
+			<Button variant='primary' fullWidth onClick={handleSubmitCart}>
 				Оформить заказ
-			</button>
+			</Button>
 		</div>
 	);
 };
