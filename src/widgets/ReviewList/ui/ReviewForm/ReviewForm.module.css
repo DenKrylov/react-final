@@ -80,3 +80,16 @@ input:focus {
 .form__btn.maxContent {
 	width: max-content;
 }
+
+.status {
+	margin: 4px 0;
+	font-size: 14px;
+}
+
+.status_success {
+	color: #2e7d32;
+}
+
+.status_error {
+	color: #d32f2f;
+}

@@ -1,10 +1,9 @@
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import {
 	Avatar,
 	Box,
 	Container,
 	Link,
-	TextField,
 	Typography,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -20,6 +19,7 @@ import { signInFormSchema } from '../utils/validator';
 import { useSignInMutation } from '../../../shared/store/api/authApi';
 import { userActions } from '../../../shared/store/slices/user';
 import { getMessageFromError } from '../../../shared/utils';
+import { Input } from '../../../shared/ui/Input';
 
 export const SignInForm: FC = () => {
 	const dispatch = useDispatch();
@@ -45,6 +45,11 @@ export const SignInForm: FC = () => {
 		// валидации, мы используем yup
 		resolver: yupResolver(signInFormSchema),
 	});
+	const emailInputRef = useRef<HTMLInputElement | null>(null);
+
+	useEffect(() => {
+		emailInputRef.current?.focus();
+	}, []);
 
 	const submitHandler: SubmitHandler<SignInFormValues> = async (values) => {
 		try {
@@ -105,31 +110,36 @@ export const SignInForm: FC = () => {
 					<Controller
 						name='email'
 						control={control}
-						render={({ field }) => (
-							<TextField
-								margin='normal'
-								label='Email Address'
-								type='email'
-								fullWidth
-								required
-								autoComplete='email'
-								error={!!errors.email?.message}
-								helperText={errors.email?.message}
-								{...field}
-							/>
-						)}
+						render={({ field }) => {
+							const { ref: fieldRef, ...fieldProps } = field;
+							return (
+								<Input
+									margin='normal'
+									label='Email Address'
+									type='email'
+									required
+									autoComplete='email'
+									error={!!errors.email?.message}
+									helperText={errors.email?.message}
+									inputRef={(node) => {
+										fieldRef(node);
+										emailInputRef.current = node;
+									}}
+									{...fieldProps}
+								/>
+							);
+						}}
 					/>
 					<Controller
 						name='password'
 						control={control}
 						render={({ field }) => (
-							<TextField
+							<Input
 								label='Password'
 								type='password'
 								error={!!errors.password?.message}
 								helperText={errors.password?.message}
 								margin='normal'
-								fullWidth
 								required
 								{...field}
 							/>

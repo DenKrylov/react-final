@@ -1,14 +1,7 @@
 import { FC } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-	Avatar,
-	Box,
-	Container,
-	Link,
-	TextField,
-	Typography,
-} from '@mui/material';
+import { Avatar, Box, Container, Link, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -19,6 +12,7 @@ import { signUpFormSchema } from '../utils/validator';
 import { userActions } from '../../../shared/store/slices/user';
 import { getMessageFromError } from '../../../shared/utils';
 import { useSignUpMutation } from '../../../shared/store/api/authApi';
+import { Input } from '../../../shared/ui/Input';
 
 export const SignUpForm: FC = () => {
 	const dispatch = useDispatch();
@@ -38,6 +32,7 @@ export const SignUpForm: FC = () => {
 		defaultValues: {
 			email: '',
 			password: '',
+			confirmPassword: '',
 		},
 		// react-hook-form умеет работать со многими библиотеками
 		// валидации, мы используем yup
@@ -45,11 +40,12 @@ export const SignUpForm: FC = () => {
 	});
 
 	const submitHandler: SubmitHandler<SignUpFormValues> = async (values) => {
+		const { email, password } = values;
 		try {
 			// метод "unwrap" помогает убрать вспомогательные обертки
 			// RTK, которые обрабатывают ошибки. Теперь ошибки обрабатываем мы
 			// с помощью конструкции try...catch. В этом случае нам так удобней
-			const response = await signUpRequestFn(values).unwrap();
+			const response = await signUpRequestFn({ email, password }).unwrap();
 
 			dispatch(userActions.setUser(response.user));
 			dispatch(
@@ -100,11 +96,10 @@ export const SignUpForm: FC = () => {
 						name='email'
 						control={control}
 						render={({ field }) => (
-							<TextField
+							<Input
 								margin='normal'
 								label='Email Address'
 								type='email'
-								fullWidth
 								required
 								autoComplete='email'
 								error={!!errors.email?.message}
@@ -117,13 +112,27 @@ export const SignUpForm: FC = () => {
 						name='password'
 						control={control}
 						render={({ field }) => (
-							<TextField
+							<Input
 								label='Password'
 								type='password'
 								error={!!errors.password?.message}
 								helperText={errors.password?.message}
 								margin='normal'
-								fullWidth
+								required
+								{...field}
+							/>
+						)}
+					/>
+					<Controller
+						name='confirmPassword'
+						control={control}
+						render={({ field }) => (
+							<Input
+								label='Confirm password'
+								type='password'
+								error={!!errors.confirmPassword?.message}
+								helperText={errors.confirmPassword?.message}
+								margin='normal'
 								required
 								{...field}
 							/>
